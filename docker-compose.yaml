@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  flaskapp:
+    build:
+      context: ./backend
+      dockerfile: flask.dockerfile
+    container_name: flaskapp
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    networks:
+      - appnet
+
+  nextapp:
+    build:
+      context: ./frontend
+      dockerfile: next.dockerfile
+    container_name: nextapp
+    environment:
+      NEXT_PUBLIC_API_URL: http://flaskapp:4000
+    ports:
+      - "80:3000"
+    depends_on:
+      - flaskapp
+    networks:
+      - appnet
+
+volumes:
+  pgdata:
+
+networks:
+  appnet:
+    driver: bridge
