@@ -34,9 +34,19 @@ else:
     exit(1)
 
 # create a test route
-@app.route('/test', methods=['GET'])
+@app.route('/healthcheck', methods=['GET'])
 def test():
   return jsonify({'message': 'El servidor está en ejecución'})
+
+# revision de la DB
+@app.route('/ready', methods=['GET'])
+def test():
+    try:
+        # Verificar la conexión usando el ping de SQLAlchemy
+        db.engine.connect().close()
+        return jsonify({'message': 'El servidor está en ejecución'}),200
+    except Exception as e:
+        return jsonify({'message': f'Error en la conexión: {str(e)}'}), 500
 
 # create a user
 @app.route('/api/flask/users', methods=['POST'])
