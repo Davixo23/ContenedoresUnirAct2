@@ -34,13 +34,13 @@ else:
     exit(1)
 
 # create a test route
-@app.route('/healthcheck', methods=['GET'])
-def test():
+@app.route('/api/healthcheck', methods=['GET'])
+def health():
   return jsonify({'message': 'El servidor está en ejecución'})
 
 # revision de la DB
-@app.route('/ready', methods=['GET'])
-def test():
+@app.route('/api/ready', methods=['GET'])
+def ready():
     try:
         # Verificar la conexión usando el ping de SQLAlchemy
         db.engine.connect().close()
